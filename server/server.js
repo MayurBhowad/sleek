@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const passport = require('passport');
+const path = require('path');
 
 //IMPORT ROUTES
 const users = require('./routes/api/users.route');
@@ -36,6 +37,16 @@ app.get('/', (req, res) => {
 //USE ROUTES
 app.use('/api/users', users);
 app.use('/api/profiles', profiles);
+
+//serve static assets if in Production
+if (process.env.NODE_ENV === 'production') {
+  //set static folder
+  app.use(express.static('client/build'));
+
+  app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
+  });
+}
 
 app.listen(PORT, () =>
   console.log(`Server is Up and Running on PORT: ${PORT}`)
